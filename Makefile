@@ -13,4 +13,4 @@ GCC = $(GCC_BIN) $(GCC_OPTIONS) $(LIBRARIES)
 
 
 default:
-	$(GCC) $(GCC_OPTIONS) $(LIBRARIES) -o city_gen main.cc
+	$(GCC) -o city_gen main.cc
