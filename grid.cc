@@ -15,19 +15,19 @@ Grid::Grid(int x, int z) {
   }
 }
 
-bool Grid::inBounds(int x, int z) {
+bool Grid::inBounds(int x, int z) const {
   return (x >= 0 && x < getDimX()) && (z >= 0 && z < getDimZ());
 }
 
-int Grid::getDimX() {
+int Grid::getDimX() const {
   return dimX;
 }
 
-int Grid::getDimZ() {
+int Grid::getDimZ() const {
   return dimZ;
 }
 
-int Grid::get(int x, int z) {
+int Grid::get(int x, int z) const {
   assert(inBounds(x, z));
 
   return tiles[x][z];
@@ -40,7 +40,7 @@ void Grid::set(int x, int z, int targetY) {
   tiles[x][z] = targetY;
 }
 
-void Grid::dumpAscii() {
+void Grid::dumpAscii() const {
   for (int x = 0; x < getDimX(); x++) {
     for (int z = 0; z < getDimZ(); z++) {
       int y = get(x, z);
