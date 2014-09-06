@@ -16,7 +16,7 @@ class Grid {
     std::vector< std::vector<int> > tiles;
 
     /** Pure */
-    bool inBounds(int x, int z);
+    bool inBounds(int x, int z) const;
 
   public:
     // Constructor initializes all heights to 0.
@@ -24,15 +24,15 @@ class Grid {
     // TODO destructor?
 
     /** Pure */
-    int getDimX();
-    int getDimZ();
+    int getDimX() const;
+    int getDimZ() const;
     // Returns y
-    int get(int x, int z);
+    int get(int x, int z) const;
 
     /* Modify */
     void set(int x, int z, int targetY);
 
     /* Side-effect */
     // Represents ground height as '.'
-    void dumpAscii();
+    void dumpAscii() const;
 };
