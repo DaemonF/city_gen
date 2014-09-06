@@ -1,4 +1,4 @@
-GCC_BIN = gcc
+GCC_BIN = g++
 GCC_OPTIONS = -std=gnu++11
 LIBRARIES = -lglfw
 
@@ -11,6 +11,9 @@ endif
 
 GCC = $(GCC_BIN) $(GCC_OPTIONS) $(LIBRARIES)
 
+# TODO makefile is recompiling when nothing's changing
 
 default:
 	$(GCC) -o city_gen main.cc
+	# TODO use different rules/targets
+	$(GCC) -o test_bldg test_bldg.cc grid.cc

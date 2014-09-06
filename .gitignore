@@ -22,3 +22,7 @@
 
 # Editor swapfiles
 *.swp
+
+# Resulting binaries
+city_gen
+test_bldg
