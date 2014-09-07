@@ -28,3 +28,27 @@ void initializeRectangle(Grid &grid, int atX, int atZ, int sizeX, int sizeZ, int
   // right column
   fill(grid, right, right, top, bottom, targetY);
 }
+
+void cutCorners(
+  Grid &grid, const CutCornerBounds& bounds, int lowerY, int borderY,
+  const CutCornerOptions &options
+) {
+  assert(lowerY < borderY);
+
+  int sizeX = bounds.x2 - bounds.x1;
+  int sizeZ = bounds.z2 - bounds.z1;
+  int x1 = bounds.x1;
+  int x2 = bounds.x2 - 1;
+  int z1 = bounds.z1;
+  int z2 = bounds.z2 - 1;
+
+  int cutX = sizeX * options.percentX / 100;
+  int cutZ = sizeZ * options.percentZ / 100;
+
+  // top-left
+  // TODO make fill first check that the value below is something known
+  // First fill the big blob with the border, then do a slightly smaller one with the lower height
+  fill(grid, x1, x1 + cutX, z1, z1 + cutZ, borderY);
+  // TODO watch out when we slice '1'
+  fill(grid, x1, x1 + cutX - 1, z1, z1 + cutZ - 1, lowerY);
+}
