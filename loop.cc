@@ -4,25 +4,27 @@
 #include <vector>
 #include <assert.h>
 
-std::ostream& operator<<(std::ostream &os, const Pt &pt) {
+using namespace std;
+
+ostream& operator<<(ostream &os, const Pt &pt) {
   return os << "Pt(" << pt.x() << ", " << pt.y() << ", " << pt.z() << ")";
 }
 
-std::ostream& operator<<(std::ostream &os, const Line &line) {
+ostream& operator<<(ostream &os, const Line &line) {
   return os << "Line(" << line.start() << ", " << line.end() << ")";
 }
 
-std::ostream& operator<<(std::ostream &os, const Loop &loop) {
+ostream& operator<<(ostream &os, const Loop &loop) {
   // TODO just show points, since we're verified to be valid?
   os << "Loop(\n";
   for (auto line : loop.lines) {
-    os << "  " << line << std::endl;
+    os << "  " << line << endl;
   }
   os << ")";
   return os;
 }
 
-Loop::Loop(std::list<Line> initialLines) {
+Loop::Loop(list<Line> initialLines) {
   // TODO copy better?
   for (auto line : initialLines) {
     lines.push_back(line);
@@ -62,15 +64,15 @@ void Loop::dumpAscii() const {
   int maxZ = 0;
   // TODO be functional!
   for (auto line : lines) {
-    maxX = std::max(maxX, line.start().x());
-    maxX = std::max(maxX, line.end().x());
+    maxX = max(maxX, line.start().x());
+    maxX = max(maxX, line.end().x());
 
-    maxZ = std::max(maxZ, line.start().z());
-    maxZ = std::max(maxZ, line.end().z());
+    maxZ = max(maxZ, line.start().z());
+    maxZ = max(maxZ, line.end().z());
   }
 
   // Fill out a lil grid
-  std::vector< std::vector<int> > grid(maxX + 1, std::vector<int>(maxZ + 1));
+  vector< vector<int> > grid(maxX + 1, vector<int>(maxZ + 1));
   // TODO const line& ?
   for (auto line : lines) {
     // TODO this assumes all lines are either horiz/vertical and have same height (all should be
@@ -81,8 +83,8 @@ void Loop::dumpAscii() const {
     int z2 = line.end().z();
     int y = line.start().y();
 
-    for (int x = std::min(x1, x2); x <= std::max(x1, x2); x++) {
-      for (int z = std::min(z1, z2); z <= std::max(z1, z2); z++) {
+    for (int x = min(x1, x2); x <= max(x1, x2); x++) {
+      for (int z = min(z1, z2); z <= max(z1, z2); z++) {
         grid[x][z] = y;
       }
     }
@@ -93,9 +95,9 @@ void Loop::dumpAscii() const {
     for (int x = 0; x <= maxX; x++) {
       int y = grid[x][z];
       char tile = y == 0 ? ' ' : 'a' + (y - 1);
-      std::cout << tile;
+      cout << tile;
     }
-    std::cout << std::endl;
+    cout << endl;
   }
 }
 
@@ -135,4 +137,19 @@ void Loop::cutFirstCorner(int cutX, int cutZ) {
   lines.insert(iter, newLine4);
 
   assertValid();
+}
+
+list<Line> makeRectangle(int sizeX, int sizeZ, int y) {
+  Pt pt1(0, y, 0);
+  Pt pt2(sizeX, y, 0);
+  Pt pt3(sizeX, y, sizeZ);
+  Pt pt4(0, y, sizeZ);
+
+  list<Line> rectangle;
+  rectangle.push_back(Line(pt1, pt2));
+  rectangle.push_back(Line(pt2, pt3));
+  rectangle.push_back(Line(pt3, pt4));
+  rectangle.push_back(Line(pt4, pt1));
+
+  return rectangle;
 }

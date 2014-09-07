@@ -1,17 +1,18 @@
 #include "loop.h"
-#include "bldg_gen.h"
 #include <iostream>
+
+using namespace std;
 
 int main()
 {
   Loop loop(makeRectangle(10, 10, 1));
 
-  std::cout << "Original rectangle:\n";
+  cout << "Original rectangle:\n";
   loop.dumpAscii();
-  std::cout << loop << std::endl;
+  cout << loop << endl;
 
   loop.cutFirstCorner(4, 3);
-  std::cout << "\nFirst corner cut:\n";
+  cout << "\nFirst corner cut:\n";
   loop.dumpAscii();
-  std::cout << loop << std::endl;
+  cout << loop << endl;
 }
