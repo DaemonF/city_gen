@@ -3,6 +3,8 @@
 #include <assert.h>
 #include <iostream>
 
+using namespace std;
+
 // TODO most of this stuff should be private to the generation part of the code
 
 /**
@@ -82,8 +84,8 @@ class Line {
 // TODO place the loop at a fixed y, have 2D points inside
 class Loop {
   private:
-    std::list<Line> lines;
-    friend std::ostream& operator<<(std::ostream &os, const Loop &loop);
+    list<Line> lines;
+    friend ostream& operator<<(ostream &os, const Loop &loop);
 
     /** Side-effect */
     // Verifies the invariant that adjacent lines share a vertex.
@@ -91,15 +93,18 @@ class Loop {
 
   public:
     // TODO don't copy the list when we take it as a param?
-    Loop(std::list<Line> initialLines);
+    Loop(list<Line> initialLines);
     // TODO destructor?
 
     /** Pure */
 
     /* Modify */
-    void cutFirstCorner(int cutX, int cutZ); // TODO in bldg_gen?
+    void cutFirstCorner(int cutX, int cutZ);
 
     /* Side-effect */
     // Represents ground height (0) as ' ', each step up as an increasing letter.
     void dumpAscii() const;
 };
+
+// Begins at (0, y, 0)
+list<Line> makeRectangle(int sizeX, int sizeZ, int y);
