@@ -101,11 +101,25 @@ void Loop::dumpAscii() const {
   }
 }
 
-void Loop::cutFirstCorner(int cutX, int cutZ) {
+list<Line> makeRectangle(int sizeX, int sizeZ, int y) {
+  Pt pt1(0, y, 0);
+  Pt pt2(sizeX, y, 0);
+  Pt pt3(sizeX, y, sizeZ);
+  Pt pt4(0, y, sizeZ);
+
+  list<Line> rectangle;
+  rectangle.push_back(Line(pt1, pt2));
+  rectangle.push_back(Line(pt2, pt3));
+  rectangle.push_back(Line(pt3, pt4));
+  rectangle.push_back(Line(pt4, pt1));
+
+  return rectangle;
+}
+
+list<Line>::iterator Loop::cutCorner(list<Line>::iterator iter, int cutX, int cutZ) {
   assert(cutX >= 0);
   assert(cutZ >= 0);
 
-  auto iter = lines.begin();
   Line l1 = *iter;
   iter++;
   Line l2 = *iter;
@@ -137,19 +151,9 @@ void Loop::cutFirstCorner(int cutX, int cutZ) {
   lines.insert(iter, newLine4);
 
   assertValid();
+  return iter;
 }
 
-list<Line> makeRectangle(int sizeX, int sizeZ, int y) {
-  Pt pt1(0, y, 0);
-  Pt pt2(sizeX, y, 0);
-  Pt pt3(sizeX, y, sizeZ);
-  Pt pt4(0, y, sizeZ);
-
-  list<Line> rectangle;
-  rectangle.push_back(Line(pt1, pt2));
-  rectangle.push_back(Line(pt2, pt3));
-  rectangle.push_back(Line(pt3, pt4));
-  rectangle.push_back(Line(pt4, pt1));
-
-  return rectangle;
+void Loop::cutAllCorners(int cutX, int cutZ) {
+  cutCorner(lines.begin(), cutX, cutZ);
 }

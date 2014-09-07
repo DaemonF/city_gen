@@ -11,8 +11,8 @@ int main()
   loop.dumpAscii();
   cout << loop << endl;
 
-  loop.cutFirstCorner(4, 3);
-  cout << "\nFirst corner cut:\n";
+  loop.cutAllCorners(4, 3);
+  cout << "\nAfter all corner cuts:\n";
   loop.dumpAscii();
   cout << loop << endl;
 }

@@ -87,6 +87,11 @@ class Loop {
     list<Line> lines;
     friend ostream& operator<<(ostream &os, const Loop &loop);
 
+    /** Modify */
+    // Cuts the corner between the two lines starting at the iterator. Returns an iterator pointing
+    // to the new version of the second line.
+    list<Line>::iterator cutCorner(list<Line>::iterator it, int cutX, int cutZ);
+
     /** Side-effect */
     // Verifies the invariant that adjacent lines share a vertex.
     void assertValid();
@@ -99,7 +104,7 @@ class Loop {
     /** Pure */
 
     /* Modify */
-    void cutFirstCorner(int cutX, int cutZ);
+    void cutAllCorners(int cutX, int cutZ);
 
     /* Side-effect */
     // Represents ground height (0) as ' ', each step up as an increasing letter.
