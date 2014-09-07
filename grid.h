@@ -8,6 +8,8 @@
  *
  * The XZ plane is the ground, with Y being height.
  * 0 indexing.
+ * TODO height should increase monotonically, then when manifesting to a quad, choose (possibly
+ * dynamic) scale for each step
  */
 
 class Grid {
@@ -33,6 +35,6 @@ class Grid {
     void set(int x, int z, int targetY);
 
     /* Side-effect */
-    // Represents ground height as '.'
+    // Represents ground height as ' '
     void dumpAscii() const;
 };

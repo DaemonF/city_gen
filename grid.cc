@@ -45,7 +45,7 @@ void Grid::dumpAscii() const {
     for (int z = 0; z < getDimZ(); z++) {
       int y = get(x, z);
       if (y == 0) {
-        std::cout << '.';
+        std::cout << ' ';
       } else {
         // TODO how to display many levels?
         assert(y < 10);
