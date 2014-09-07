@@ -12,6 +12,16 @@ std::ostream& operator<<(std::ostream &os, const Line &line) {
   return os << "Line(" << line.start() << ", " << line.end() << ")";
 }
 
+std::ostream& operator<<(std::ostream &os, const Loop &loop) {
+  // TODO just show points, since we're verified to be valid?
+  os << "Loop(\n";
+  for (auto line : loop.lines) {
+    os << "  " << line << std::endl;
+  }
+  os << ")";
+  return os;
+}
+
 Loop::Loop(std::list<Line> initialLines) {
   // TODO copy better?
   for (auto line : initialLines) {
@@ -24,6 +34,7 @@ Loop::Loop(std::list<Line> initialLines) {
 void Loop::assertValid() {
   auto iter = lines.begin();
   while (true) {
+    // TODO could also use boost::next()
     Line l1 = *iter;
     iter++;
     if (iter == lines.end()) {
@@ -89,10 +100,39 @@ void Loop::dumpAscii() const {
 }
 
 void Loop::cutFirstCorner(int cutX, int cutZ) {
-  auto orig_iter = lines.begin();
-  Line l1 = *orig_iter;
-  orig_iter++;
-  Line l2 = *orig_iter;
+  assert(cutX >= 0);
+  assert(cutZ >= 0);
+
+  auto iter = lines.begin();
+  Line l1 = *iter;
+  iter++;
+  Line l2 = *iter;
+  Pt oldSharedVertex = l1.end();
+
+  // Move shared_vert by cutX and cutZ, but pick the direction to wind up inside the loop.
+  // TODO depends on some directional stuff making sense... maybe pick the dx, dy multiplier by the
+  // two lines, to be flexible?
+
+  int dxLine1 = -l1.getDirectionX() * cutX;
+  int dzLine1 = -l1.getDirectionZ() * cutZ;
+  int dxLine2 = -l2.getDirectionX() * cutX;
+  int dzLine2 = -l2.getDirectionZ() * cutZ;
+  // TODO wow, more fluent style, please? :P
+  Line newLine1(l1.start(), l1.end().delta(dxLine1, 0, dzLine1));
+  Line newLine2(newLine1.end(), newLine1.end().delta(dxLine2, 0, dzLine2));
+  Line newLine3(newLine2.end(), newLine2.end().delta(-dxLine1, 0, -dzLine1));
+  Line newLine4(newLine3.end(), l2.end());
+
+  // Point to l1 again
+  iter--;
+  // Goodbye l1
+  iter = lines.erase(iter);
+  // Goodbye l2
+  iter = lines.erase(iter);
+  lines.insert(iter, newLine1);
+  lines.insert(iter, newLine2);
+  lines.insert(iter, newLine3);
+  lines.insert(iter, newLine4);
 
   assertValid();
 }
