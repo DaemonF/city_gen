@@ -119,11 +119,12 @@ list<Line> makeRectangle(int sizeX, int sizeZ, int y) {
 list<Line>::iterator Loop::cutCorner(list<Line>::iterator iter, int cutX, int cutZ) {
   assert(cutX >= 0);
   assert(cutZ >= 0);
+  assert(iter != lines.end());
 
   Line l1 = *iter;
   iter++;
+  assert(iter != lines.end());
   Line l2 = *iter;
-  Pt oldSharedVertex = l1.end();
 
   // Move shared_vert by cutX and cutZ, but pick the direction to wind up inside the loop.
   // TODO depends on some directional stuff making sense... maybe pick the dx, dy multiplier by the
@@ -131,8 +132,9 @@ list<Line>::iterator Loop::cutCorner(list<Line>::iterator iter, int cutX, int cu
 
   int dxLine1 = -l1.getDirectionX() * cutX;
   int dzLine1 = -l1.getDirectionZ() * cutZ;
-  int dxLine2 = -l2.getDirectionX() * cutX;
-  int dzLine2 = -l2.getDirectionZ() * cutZ;
+  int dxLine2 = l2.getDirectionX() * cutX;
+  int dzLine2 = l2.getDirectionZ() * cutZ;
+  //cout << "deltas: " << dxLine1 << ", " << dzLine1 << " and " << dxLine2 << ", " << dzLine2 << endl;
   // TODO wow, more fluent style, please? :P
   Line newLine1(l1.start(), l1.end().delta(dxLine1, 0, dzLine1));
   Line newLine2(newLine1.end(), newLine1.end().delta(dxLine2, 0, dzLine2));
@@ -151,9 +153,19 @@ list<Line>::iterator Loop::cutCorner(list<Line>::iterator iter, int cutX, int cu
   lines.insert(iter, newLine4);
 
   assertValid();
+  // Set the iterator to the position of newLine4
+  iter--;
   return iter;
 }
 
 void Loop::cutAllCorners(int cutX, int cutZ) {
-  cutCorner(lines.begin(), cutX, cutZ);
+  // TODO better approach: build new lines functionally?
+  auto iter = lines.begin();
+  while (iter != lines.end()) {
+    iter = cutCorner(iter, cutX, cutZ);
+
+    cout << "\nAfter another corner cut:\n";
+    dumpAscii();
+  }
+  // TODO start/end case
 }
