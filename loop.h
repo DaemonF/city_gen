@@ -71,9 +71,9 @@ class Line {
     int getDirectionZ() const {
       // TODO is this kinda backwards?
       if (goesUp()) {
-        return 1;
-      } else if (goesDown()) {
         return -1;
+      } else if (goesDown()) {
+        return 1;
       } else {
         return 0;
       }
