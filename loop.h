@@ -1,6 +1,7 @@
 #pragma once
 #include <list>
 #include <assert.h>
+#include <iostream>
 
 // TODO most of this stuff should be private to the generation part of the code
 
@@ -39,6 +40,7 @@ class Line {
 };
 
 // Represents a loop of line segments
+// TODO place the loop at a fixed y, have 2D points inside
 class Loop {
   private:
     std::list<Line> lines;
@@ -55,6 +57,7 @@ class Loop {
     /** Pure */
 
     /* Modify */
+    void cutFirstCorner(int cutX, int cutZ); // TODO in bldg_gen?
 
     /* Side-effect */
     // Represents ground height (0) as ' ', each step up as an increasing letter.

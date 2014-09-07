@@ -4,18 +4,31 @@
 #include <vector>
 #include <assert.h>
 
+std::ostream& operator<<(std::ostream &os, const Pt &pt) {
+  return os << "Pt(" << pt.x() << ", " << pt.y() << ", " << pt.z() << ")";
+}
+
+std::ostream& operator<<(std::ostream &os, const Line &line) {
+  return os << "Line(" << line.start() << ", " << line.end() << ")";
+}
+
 Loop::Loop(std::list<Line> initialLines) {
   // TODO copy better?
   for (auto line : initialLines) {
     lines.push_back(line);
   }
+
+  assertValid();
 }
 
 void Loop::assertValid() {
   auto iter = lines.begin();
-  while (iter != lines.end()) {
+  while (true) {
     Line l1 = *iter;
     iter++;
+    if (iter == lines.end()) {
+      break;
+    }
     Line l2 = *iter;
     // TODO make an equality checker for points
     assert(l1.end().x() == l2.start().x());
@@ -73,4 +86,13 @@ void Loop::dumpAscii() const {
     }
     std::cout << std::endl;
   }
+}
+
+void Loop::cutFirstCorner(int cutX, int cutZ) {
+  auto orig_iter = lines.begin();
+  Line l1 = *orig_iter;
+  orig_iter++;
+  Line l2 = *orig_iter;
+
+  assertValid();
 }

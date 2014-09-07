@@ -8,4 +8,8 @@ int main()
 
   std::cout << "Original rectangle:\n";
   loop.dumpAscii();
+
+  loop.cutFirstCorner(4, 3);
+  std::cout << "\nFirst corner cut:\n";
+  loop.dumpAscii();
 }
