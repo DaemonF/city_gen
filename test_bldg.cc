@@ -1,14 +1,11 @@
-#include "grid.h"
+#include "loop.h"
 #include "bldg_gen.h"
+#include <iostream>
 
 int main()
 {
-  Grid grid(10, 10);
+  Loop loop(makeRectangle(10, 10, 1));
 
-  initializeRectangle(grid, 0, 0, 10, 10, 1);
-  CutCornerOptions options = {40, 20};
-  CutCornerBounds bounds = {0, 10, 0, 10};
-  cutCorners(grid, bounds, 0, 1, options);
-
-  grid.dumpAscii();
+  std::cout << "Original rectangle:\n";
+  loop.dumpAscii();
 }

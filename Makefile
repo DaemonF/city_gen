@@ -16,4 +16,4 @@ GCC = $(GCC_BIN) $(GCC_OPTIONS) $(LIBRARIES)
 default:
 	$(GCC) -o city_gen main.cc
 	# TODO use different rules/targets
-	$(GCC) -o test_bldg test_bldg.cc grid.cc bldg_gen.cc
+	$(GCC) -o test_bldg test_bldg.cc loop.cc bldg_gen.cc
