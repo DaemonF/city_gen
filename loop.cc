@@ -24,6 +24,14 @@ ostream& operator<<(ostream &os, const Loop &loop) {
   return os;
 }
 
+// TODO const &?
+bool operator==(Pt pt1, Pt pt2) {
+  return pt1.x() == pt2.x() && pt1.y() == pt2.y();
+}
+bool operator!=(Pt pt1, Pt pt2) {
+  return !(pt1 == pt2);
+}
+
 Loop::Loop(list<Line> initialLines) {
   // TODO copy better?
   for (auto line : initialLines) {
@@ -43,17 +51,10 @@ void Loop::assertValid() {
       break;
     }
     Line l2 = *iter;
-    // TODO make an equality checker for points
-    assert(l1.end().x() == l2.start().x());
-    assert(l1.end().y() == l2.start().y());
-    assert(l1.end().z() == l2.start().z());
+    assert(l1.end() == l2.start());
   }
   // Don't forget to compare the last and first
-  Line l1 = lines.back();
-  Line l2 = lines.front();
-  assert(l1.end().x() == l2.start().x());
-  assert(l1.end().y() == l2.start().y());
-  assert(l1.end().z() == l2.start().z());
+  assert(lines.back().end() == lines.front().start());
 }
 
 void Loop::dumpAscii() const {
