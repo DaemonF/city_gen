@@ -117,10 +117,19 @@ list<Line> makeRectangle(int sizeX, int sizeZ, int y) {
   return rectangle;
 }
 
-list<Line> cutCorner(Line l1, Line l2, int cutX, int cutZ) {
+list<Line>::iterator Loop::cutCorner(list<Line>::iterator iter, int cutX, int cutZ) {
   assert(cutX >= 0);
   assert(cutZ >= 0);
-  assert(l1.end() == l2.start());
+  assert(iter != lines.end());
+
+  Line l1 = *iter;
+  iter++;
+  assert(iter != lines.end());
+  Line l2 = *iter;
+
+  // Move shared_vert by cutX and cutZ, but pick the direction to wind up inside the loop.
+  // TODO depends on some directional stuff making sense... maybe pick the dx, dy multiplier by the
+  // two lines, to be flexible?
 
   int dxLine1 = -l1.getDirectionX() * cutX;
   int dzLine1 = -l1.getDirectionZ() * cutZ;
@@ -133,58 +142,31 @@ list<Line> cutCorner(Line l1, Line l2, int cutX, int cutZ) {
   Line newLine3(newLine2.end(), newLine2.end().delta(-dxLine1, 0, -dzLine1));
   Line newLine4(newLine3.end(), l2.end());
 
-  list<Line> result;
-  result.push_back(newLine1);
-  result.push_back(newLine2);
-  result.push_back(newLine3);
-  result.push_back(newLine4);
-  return result;
+  // Point to l1 again
+  iter--;
+  // Goodbye l1
+  iter = lines.erase(iter);
+  // Goodbye l2
+  iter = lines.erase(iter);
+  lines.insert(iter, newLine1);
+  lines.insert(iter, newLine2);
+  lines.insert(iter, newLine3);
+  lines.insert(iter, newLine4);
+
+  assertValid();
+  // Set the iterator to the position of newLine4
+  iter--;
+  return iter;
 }
 
 void Loop::cutAllCorners(int cutX, int cutZ) {
-  list<Line> result;
-
-  lines.zipWith(lines.tail)
-
-  // TODO consider a polygon class with an iterator that makes sense
-
+  // TODO better approach: build new lines functionally?
   auto iter = lines.begin();
-  Line l1 = *iter;
-  Line l2 = *next(iter);
-  while (true) {
-    auto newLines = cutCorner(l1, l2, cutX, cutZ);
-    // Just append the new lines for now
-    result.insert(result.end(), newLines.begin(), newLines.end());
-
-    if (iter == lines.end()) {
-      break;
-    }
-    l1 = newLines.back();
-    iter++;
-    if (iter == lines.end()) {
-      l2 = result.front();
-      // TODO have to do special work to stitch it together :(
-    }
-  }
-
-
-
-  Line l1 = *lines.begin()
-
-  auto iter = lines.begin();
-  Line l2 = *next(iter);
   while (iter != lines.end()) {
+    iter = cutCorner(iter, cutX, cutZ);
 
-
-    iter1++;
+    cout << "\nAfter another corner cut:\n";
+    dumpAscii();
   }
-
-
-  //cout << "\nAfter another corner cut:\n";
-  //dumpAscii();
-
-  lines.clear();
-  lines.swap(result);
-  cout << *this << endl;
-  assertValid();
+  // TODO start/end case
 }

@@ -88,6 +88,9 @@ class Loop {
     friend ostream& operator<<(ostream &os, const Loop &loop);
 
     /** Modify */
+    // Cuts the corner between the two lines starting at the iterator. Returns an iterator pointing
+    // to the new version of the second line.
+    list<Line>::iterator cutCorner(list<Line>::iterator it, int cutX, int cutZ);
 
     /** Side-effect */
     // Verifies the invariant that adjacent lines share a vertex.
@@ -110,6 +113,3 @@ class Loop {
 
 // Begins at (0, y, 0)
 list<Line> makeRectangle(int sizeX, int sizeZ, int y);
-
-// Cuts the corner between the two given lines. Returns 4 new lines that should replace l1 and l2.
-list<Line> cutCorner(Line l1, Line l2, int cutX, int cutZ);
