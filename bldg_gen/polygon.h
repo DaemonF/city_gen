@@ -8,16 +8,16 @@
 
 using namespace std;
 
-// Represents a loop of points (aka a polygon :P )
+// Represents a simple polygon
 // TODO place the loop at a fixed y, have 2D points inside
-class Loop {
+class Polygon {
   private:
     list<Pt> points;
-    friend ostream& operator<<(ostream &os, const Loop &loop);
+    friend ostream& operator<<(ostream &os, const Polygon &polygon);
 
   public:
     // TODO don't copy the list when we take it as a param?
-    Loop(list<Pt> initialPoints);
+    Polygon(list<Pt> initialPoints);
     // TODO destructor?
 
     /** Pure */

@@ -1,4 +1,4 @@
-#include "loop.h"
+#include "polygon.h"
 #include <iostream>
 #include <algorithm>
 #include <vector>
@@ -14,9 +14,9 @@ ostream& operator<<(ostream &os, const Line &line) {
   return os << "Line(" << line.start() << ", " << line.end() << ")";
 }
 
-ostream& operator<<(ostream &os, const Loop &loop) {
-  os << "Loop(\n";
-  for (auto pt : loop.points) {
+ostream& operator<<(ostream &os, const Polygon &polygon) {
+  os << "Polygon(\n";
+  for (auto pt : polygon.points) {
     os << "  " << pt << endl;
   }
   os << ")";
@@ -31,14 +31,14 @@ bool operator!=(Pt pt1, Pt pt2) {
   return !(pt1 == pt2);
 }
 
-Loop::Loop(list<Pt> initialPoints) {
+Polygon::Polygon(list<Pt> initialPoints) {
   // TODO copy better?
   for (auto pt : initialPoints) {
     points.push_back(pt);
   }
 }
 
-list<Line> Loop::getLines() const {
+list<Line> Polygon::getLines() const {
   list<Line> lines;
   for (auto iter = points.begin(); iter != points.end(); iter++) {
     if (next(iter) != points.end()) {
@@ -50,7 +50,7 @@ list<Line> Loop::getLines() const {
   return lines;
 }
 
-void Loop::dumpAscii() const {
+void Polygon::dumpAscii() const {
   // TODO assume the min is 0
 
   // Discover the bounds
@@ -107,7 +107,7 @@ list<Pt> cutCorner(Pt pt1, Pt pt2, Pt pt3, int cutX, int cutZ) {
   Line l1(pt1, pt2);
   Line l2(pt2, pt3);
 
-  // Move pt2 by cutX and cutZ, but pick the direction to wind up inside the loop.
+  // Move pt2 by cutX and cutZ, but pick the direction to wind up inside the polygon.
   int dxLine1 = -l1.getDirectionX() * cutX;
   int dzLine1 = -l1.getDirectionZ() * cutZ;
   int dxLine2 = l2.getDirectionX() * cutX;
@@ -126,7 +126,7 @@ list<Pt> cutCorner(Pt pt1, Pt pt2, Pt pt3, int cutX, int cutZ) {
   return result;
 }
 
-void Loop::cutAllCorners(int cutX, int cutZ) {
+void Polygon::cutAllCorners(int cutX, int cutZ) {
   list<Pt> result;
 
   Pt pt1 = points.front();
