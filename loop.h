@@ -3,6 +3,8 @@
 #include <assert.h>
 #include <iostream>
 
+// TODO rename polygon
+
 using namespace std;
 
 // TODO most of this stuff should be private to the generation part of the code
@@ -41,7 +43,14 @@ class Line {
 
   public:
     // TODO label these methods too?
-    Line(Pt start, Pt end) : _start(start), _end(end) {}
+    Line(Pt start, Pt end) : _start(start), _end(end) {
+      int cnt = 0;
+      cnt += goesLeft() ? 1 : 0;
+      cnt += goesRight() ? 1 : 0;
+      cnt += goesUp() ? 1 : 0;
+      cnt += goesDown() ? 1 : 0;
+      assert(cnt == 1);
+    }
     Pt start() const { return _start; }
     Pt end() const { return _end; }
 
@@ -69,7 +78,6 @@ class Line {
       }
     }
     int getDirectionZ() const {
-      // TODO is this kinda backwards?
       if (goesUp()) {
         return -1;
       } else if (goesDown()) {
@@ -80,28 +88,20 @@ class Line {
     }
 };
 
-// Represents a loop of line segments
+// Represents a loop of points (aka a polygon :P )
 // TODO place the loop at a fixed y, have 2D points inside
 class Loop {
   private:
-    list<Line> lines;
+    list<Pt> points;
     friend ostream& operator<<(ostream &os, const Loop &loop);
-
-    /** Modify */
-    // Cuts the corner between the two lines starting at the iterator. Returns an iterator pointing
-    // to the new version of the second line.
-    list<Line>::iterator cutCorner(list<Line>::iterator it, int cutX, int cutZ);
-
-    /** Side-effect */
-    // Verifies the invariant that adjacent lines share a vertex.
-    void assertValid();
 
   public:
     // TODO don't copy the list when we take it as a param?
-    Loop(list<Line> initialLines);
+    Loop(list<Pt> initialPoints);
     // TODO destructor?
 
     /** Pure */
+    list<Line> getLines() const;
 
     /* Modify */
     void cutAllCorners(int cutX, int cutZ);
@@ -112,4 +112,7 @@ class Loop {
 };
 
 // Begins at (0, y, 0)
-list<Line> makeRectangle(int sizeX, int sizeZ, int y);
+list<Pt> makeRectangle(int sizeX, int sizeZ, int y);
+
+// Returns a list of points that should replace pt2
+list<Pt> cutCorner(Pt pt1, Pt pt2, Pt pt3, int cutX, int cutZ);

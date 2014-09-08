@@ -15,10 +15,9 @@ ostream& operator<<(ostream &os, const Line &line) {
 }
 
 ostream& operator<<(ostream &os, const Loop &loop) {
-  // TODO just show points, since we're verified to be valid?
   os << "Loop(\n";
-  for (auto line : loop.lines) {
-    os << "  " << line << endl;
+  for (auto pt : loop.points) {
+    os << "  " << pt << endl;
   }
   os << ")";
   return os;
@@ -32,29 +31,23 @@ bool operator!=(Pt pt1, Pt pt2) {
   return !(pt1 == pt2);
 }
 
-Loop::Loop(list<Line> initialLines) {
+Loop::Loop(list<Pt> initialPoints) {
   // TODO copy better?
-  for (auto line : initialLines) {
-    lines.push_back(line);
+  for (auto pt : initialPoints) {
+    points.push_back(pt);
   }
-
-  assertValid();
 }
 
-void Loop::assertValid() {
-  auto iter = lines.begin();
-  while (true) {
-    // TODO could also use boost::next()
-    Line l1 = *iter;
-    iter++;
-    if (iter == lines.end()) {
-      break;
+list<Line> Loop::getLines() const {
+  list<Line> lines;
+  for (auto iter = points.begin(); iter != points.end(); iter++) {
+    if (next(iter) != points.end()) {
+      lines.push_back(Line(*iter, *next(iter)));
+    } else {
+      lines.push_back(Line(*iter, points.front()));
     }
-    Line l2 = *iter;
-    assert(l1.end() == l2.start());
   }
-  // Don't forget to compare the last and first
-  assert(lines.back().end() == lines.front().start());
+  return lines;
 }
 
 void Loop::dumpAscii() const {
@@ -64,18 +57,14 @@ void Loop::dumpAscii() const {
   int maxX = 0;
   int maxZ = 0;
   // TODO be functional!
-  for (auto line : lines) {
-    maxX = max(maxX, line.start().x());
-    maxX = max(maxX, line.end().x());
-
-    maxZ = max(maxZ, line.start().z());
-    maxZ = max(maxZ, line.end().z());
+  for (auto pt : points) {
+    maxX = max(maxX, pt.x());
+    maxZ = max(maxZ, pt.z());
   }
 
   // Fill out a lil grid
   vector< vector<int> > grid(maxX + 1, vector<int>(maxZ + 1));
-  // TODO const line& ?
-  for (auto line : lines) {
+  for (auto line : getLines()) {
     // TODO this assumes all lines are either horiz/vertical and have same height (all should be
     // true)
     int x1 = line.start().x();
@@ -102,71 +91,78 @@ void Loop::dumpAscii() const {
   }
 }
 
-list<Line> makeRectangle(int sizeX, int sizeZ, int y) {
-  Pt pt1(0, y, 0);
-  Pt pt2(sizeX, y, 0);
-  Pt pt3(sizeX, y, sizeZ);
-  Pt pt4(0, y, sizeZ);
-
-  list<Line> rectangle;
-  rectangle.push_back(Line(pt1, pt2));
-  rectangle.push_back(Line(pt2, pt3));
-  rectangle.push_back(Line(pt3, pt4));
-  rectangle.push_back(Line(pt4, pt1));
-
+list<Pt> makeRectangle(int sizeX, int sizeZ, int y) {
+  list<Pt> rectangle;
+  rectangle.push_back(Pt(0, y, 0));
+  rectangle.push_back(Pt(sizeX, y, 0));
+  rectangle.push_back(Pt(sizeX, y, sizeZ));
+  rectangle.push_back(Pt(0, y, sizeZ));
   return rectangle;
 }
 
-list<Line>::iterator Loop::cutCorner(list<Line>::iterator iter, int cutX, int cutZ) {
+list<Pt> cutCorner(Pt pt1, Pt pt2, Pt pt3, int cutX, int cutZ) {
   assert(cutX >= 0);
   assert(cutZ >= 0);
-  assert(iter != lines.end());
 
-  Line l1 = *iter;
-  iter++;
-  assert(iter != lines.end());
-  Line l2 = *iter;
+  Line l1(pt1, pt2);
+  Line l2(pt2, pt3);
 
-  // Move shared_vert by cutX and cutZ, but pick the direction to wind up inside the loop.
-  // TODO depends on some directional stuff making sense... maybe pick the dx, dy multiplier by the
-  // two lines, to be flexible?
-
+  // Move pt2 by cutX and cutZ, but pick the direction to wind up inside the loop.
   int dxLine1 = -l1.getDirectionX() * cutX;
   int dzLine1 = -l1.getDirectionZ() * cutZ;
   int dxLine2 = l2.getDirectionX() * cutX;
   int dzLine2 = l2.getDirectionZ() * cutZ;
-  //cout << "deltas: " << dxLine1 << ", " << dzLine1 << " and " << dxLine2 << ", " << dzLine2 << endl;
-  // TODO wow, more fluent style, please? :P
-  Line newLine1(l1.start(), l1.end().delta(dxLine1, 0, dzLine1));
-  Line newLine2(newLine1.end(), newLine1.end().delta(dxLine2, 0, dzLine2));
-  Line newLine3(newLine2.end(), newLine2.end().delta(-dxLine1, 0, -dzLine1));
-  Line newLine4(newLine3.end(), l2.end());
+  cout << "deltas: " << dxLine1 << ", " << dzLine1 << " and " << dxLine2 << ", " << dzLine2 << endl;
 
-  // Point to l1 again
-  iter--;
-  // Goodbye l1
-  iter = lines.erase(iter);
-  // Goodbye l2
-  iter = lines.erase(iter);
-  lines.insert(iter, newLine1);
-  lines.insert(iter, newLine2);
-  lines.insert(iter, newLine3);
-  lines.insert(iter, newLine4);
+  // TODO can be more simply expressed!
+  Pt newPt1 = pt2.delta(dxLine1, 0, dzLine1);
+  Pt newPt2 = newPt1.delta(dxLine2, 0, dzLine2);
+  Pt newPt3 = newPt2.delta(-dxLine1, 0, -dzLine1);
+  list<Pt> result;
+  result.push_back(newPt1);
+  result.push_back(newPt2);
+  result.push_back(newPt3);
 
-  assertValid();
-  // Set the iterator to the position of newLine4
-  iter--;
-  return iter;
+  return result;
 }
 
 void Loop::cutAllCorners(int cutX, int cutZ) {
-  // TODO better approach: build new lines functionally?
-  auto iter = lines.begin();
-  while (iter != lines.end()) {
-    iter = cutCorner(iter, cutX, cutZ);
+  list<Pt> result;
 
-    cout << "\nAfter another corner cut:\n";
-    dumpAscii();
+  Pt pt1 = points.front();
+  //result.push_back(pt1);  //
+  auto iter = next(points.begin());
+  Pt pt2 = *iter;
+  Pt pt3 = *next(iter);
+
+  while (true) {
+    cout << "cutting corner: " << pt1 << ", " << pt2 << ", " << pt3 << endl;
+    auto newPoints = cutCorner(pt1, pt2, pt3, cutX, cutZ);
+    result.insert(result.end(), newPoints.begin(), newPoints.end());
+    cout << "pushed a new group ending with " << newPoints.back() << "\n\n";
+
+    iter++;
+    if (iter == points.end()) {
+      break;
+    }
+    pt1 = newPoints.back();
+    if (next(iter) == points.end()) {
+      pt2 = *iter;
+      // NOT result.front(), because that's been shifted!
+      pt3 = points.front();
+    } else {
+      pt2 = *iter;
+      pt3 = *next(iter);
+    }
   }
-  // TODO start/end case
+
+  // The wrap-around case
+  cout << "cutting corner: " << result.back() << ", " << points.front() << ", " << result.front() << endl;
+  auto lastPoints = cutCorner(result.back(), points.front(), result.front(), cutX, cutZ);
+  result.insert(result.end(), lastPoints.begin(), lastPoints.end());
+
+  points.clear();
+  points.swap(result);
 }
+
+// TODO assertValid makes sure the lines aren't diagonal
