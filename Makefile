@@ -15,8 +15,6 @@ GCC = $(GCC_BIN) $(GCC_OPTIONS) $(LIBRARIES)
 
 default:
 	$(GCC) -o city_gen main.cc
-
-test_bldg:
 	$(GCC) -o test_bldg bldg_gen/*.cc
 
 clean:

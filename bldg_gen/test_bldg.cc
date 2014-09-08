@@ -1,18 +1,18 @@
-#include "loop.h"
+#include "polygon.h"
 #include <iostream>
 
 using namespace std;
 
 int main()
 {
-  Loop loop(makeRectangle(10, 10, 1));
+  Polygon polygon(makeRectangle(10, 10, 1));
 
   cout << "Original rectangle:\n";
-  loop.dumpAscii();
-  cout << loop << endl;
+  polygon.dumpAscii();
+  //cout << polygon << endl;
 
-  loop.cutAllCorners(2, 2);
+  polygon.cutAllCorners(2, 2);
   cout << "\nAfter all corner cuts:\n";
-  loop.dumpAscii();
-  cout << loop << endl;
+  polygon.dumpAscii();
+  //cout << polygon << endl;
 }
