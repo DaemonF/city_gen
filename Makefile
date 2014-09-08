@@ -11,9 +11,13 @@ endif
 
 GCC = $(GCC_BIN) $(GCC_OPTIONS) $(LIBRARIES)
 
-# TODO makefile is recompiling when nothing's changing
+# TODO makefile is recompiling when nothing's changing (only for default)
 
 default:
 	$(GCC) -o city_gen main.cc
-	# TODO use different rules/targets
-	$(GCC) -o test_bldg test_bldg.cc loop.cc
+
+test_bldg:
+	$(GCC) -o test_bldg bldg_gen/*.cc
+
+clean:
+	rm -f city_gen test_bldg
