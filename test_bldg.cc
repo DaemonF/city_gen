@@ -9,10 +9,10 @@ int main()
 
   cout << "Original rectangle:\n";
   loop.dumpAscii();
-  //cout << loop << endl;
+  cout << loop << endl;
 
   loop.cutAllCorners(2, 2);
   cout << "\nAfter all corner cuts:\n";
   loop.dumpAscii();
-  //cout << loop << endl;
+  cout << loop << endl;
 }
