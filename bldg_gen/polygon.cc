@@ -7,7 +7,7 @@
 using namespace std;
 
 ostream& operator<<(ostream &os, const Pt &pt) {
-  return os << "Pt(" << pt.x() << ", " << pt.y() << ", " << pt.z() << ")";
+  return os << "Pt(" << pt.x() << ", " << pt.z() << ")";
 }
 
 ostream& operator<<(ostream &os, const Line &line) {
@@ -25,13 +25,14 @@ ostream& operator<<(ostream &os, const Polygon &polygon) {
 
 // TODO const &?
 bool operator==(Pt pt1, Pt pt2) {
-  return pt1.x() == pt2.x() && pt1.y() == pt2.y();
+  return pt1.x() == pt2.x() && pt1.z() == pt2.z();
 }
 bool operator!=(Pt pt1, Pt pt2) {
   return !(pt1 == pt2);
 }
 
-Polygon::Polygon(list<Pt> initialPoints) {
+Polygon::Polygon(list<Pt> initialPoints, int height) {
+  y = height;
   // TODO copy better?
   for (auto pt : initialPoints) {
     points.push_back(pt);
@@ -65,13 +66,11 @@ void Polygon::dumpAscii() const {
   // Fill out a lil grid
   vector< vector<int> > grid(maxX + 1, vector<int>(maxZ + 1));
   for (auto line : getLines()) {
-    // TODO this assumes all lines are either horiz/vertical and have same height (all should be
-    // true)
+    // This relies on the assumption that all lines are either horiz/vertical and have same height
     int x1 = line.start().x();
     int z1 = line.start().z();
     int x2 = line.end().x();
     int z2 = line.end().z();
-    int y = line.start().y();
 
     for (int x = min(x1, x2); x <= max(x1, x2); x++) {
       for (int z = min(z1, z2); z <= max(z1, z2); z++) {
@@ -91,12 +90,12 @@ void Polygon::dumpAscii() const {
   }
 }
 
-list<Pt> makeRectangle(int sizeX, int sizeZ, int y) {
+list<Pt> makeRectangle(int sizeX, int sizeZ) {
   list<Pt> rectangle;
-  rectangle.push_back(Pt(0, y, 0));
-  rectangle.push_back(Pt(sizeX, y, 0));
-  rectangle.push_back(Pt(sizeX, y, sizeZ));
-  rectangle.push_back(Pt(0, y, sizeZ));
+  rectangle.push_back(Pt(0, 0));
+  rectangle.push_back(Pt(sizeX, 0));
+  rectangle.push_back(Pt(sizeX, sizeZ));
+  rectangle.push_back(Pt(0, sizeZ));
   return rectangle;
 }
 
@@ -115,9 +114,9 @@ list<Pt> cutCorner(Pt pt1, Pt pt2, Pt pt3, int cutX, int cutZ) {
   cout << "deltas: " << dxLine1 << ", " << dzLine1 << " and " << dxLine2 << ", " << dzLine2 << endl;
 
   // TODO can be more simply expressed!
-  Pt newPt1 = pt2.delta(dxLine1, 0, dzLine1);
-  Pt newPt2 = newPt1.delta(dxLine2, 0, dzLine2);
-  Pt newPt3 = newPt2.delta(-dxLine1, 0, -dzLine1);
+  Pt newPt1 = pt2.delta(dxLine1, dzLine1);
+  Pt newPt2 = newPt1.delta(dxLine2, dzLine2);
+  Pt newPt3 = newPt2.delta(-dxLine1, -dzLine1);
   list<Pt> result;
   result.push_back(newPt1);
   result.push_back(newPt2);
@@ -164,5 +163,3 @@ void Polygon::cutAllCorners(int cutX, int cutZ) {
   points.clear();
   points.swap(result);
 }
-
-// TODO assertValid makes sure the lines aren't diagonal
