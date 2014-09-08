@@ -9,15 +9,15 @@
 using namespace std;
 
 // Represents a simple polygon
-// TODO place the loop at a fixed y, have 2D points inside
 class Polygon {
   private:
+    int y;
     list<Pt> points;
     friend ostream& operator<<(ostream &os, const Polygon &polygon);
 
   public:
     // TODO don't copy the list when we take it as a param?
-    Polygon(list<Pt> initialPoints);
+    Polygon(list<Pt> initialPoints, int height);
     // TODO destructor?
 
     /** Pure */
@@ -31,8 +31,8 @@ class Polygon {
     void dumpAscii() const;
 };
 
-// Begins at (0, y, 0)
-list<Pt> makeRectangle(int sizeX, int sizeZ, int y);
+// Begins at (0, 0)
+list<Pt> makeRectangle(int sizeX, int sizeZ);
 
 // Returns a list of points that should replace pt2
 list<Pt> cutCorner(Pt pt1, Pt pt2, Pt pt3, int cutX, int cutZ);

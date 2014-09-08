@@ -12,23 +12,22 @@
 // TODO use best-practice for immutable class
 class Pt {
   private:
-    int _x, _y, _z;
+    int _x, _z;
 
   public:
-    Pt(int x, int y, int z) : _x(x), _y(y), _z(z) {
+    Pt(int x, int z) : _x(x), _z(z) {
       assert(x >= 0);
-      assert(y >= 0);
       assert(z >= 0);
     }
     int x() const { return _x; }
-    int y() const { return _y; }
     int z() const { return _z; }
 
-    Pt delta(int dx, int dy, int dz) const {
-      return Pt(x() + dx, y() + dy, z() + dz);
+    Pt delta(int dx, int dz) const {
+      return Pt(x() + dx, z() + dz);
     }
 };
 
+// Lines are strictly horizontal or vertical, never diagonal
 class Line {
   private:
     Pt _start, _end;

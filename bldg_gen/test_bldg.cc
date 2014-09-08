@@ -5,7 +5,7 @@ using namespace std;
 
 int main()
 {
-  Polygon polygon(makeRectangle(10, 10, 1));
+  Polygon polygon(makeRectangle(10, 10), 1);
 
   cout << "Original rectangle:\n";
   polygon.dumpAscii();
