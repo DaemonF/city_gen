@@ -52,12 +52,9 @@ list<Line> Polygon::getLines() const {
 }
 
 void Polygon::dumpAscii() const {
-  // TODO assume the min is 0
-
-  // Discover the bounds
+  // Discover the bounds. Assumes the min is 0.
   int maxX = 0;
   int maxZ = 0;
-  // TODO be functional!
   for (auto pt : points) {
     maxX = max(maxX, pt.x());
     maxZ = max(maxZ, pt.z());
@@ -103,24 +100,19 @@ list<Pt> cutCorner(Pt pt1, Pt pt2, Pt pt3, int cutX, int cutZ) {
   assert(cutX >= 0);
   assert(cutZ >= 0);
 
+  // Move pt2 by cutX and cutZ, but pick the direction to wind up inside the polygon.
   Line l1(pt1, pt2);
   Line l2(pt2, pt3);
-
-  // Move pt2 by cutX and cutZ, but pick the direction to wind up inside the polygon.
   int dxLine1 = -l1.getDirectionX() * cutX;
   int dzLine1 = -l1.getDirectionZ() * cutZ;
   int dxLine2 = l2.getDirectionX() * cutX;
   int dzLine2 = l2.getDirectionZ() * cutZ;
-  cout << "deltas: " << dxLine1 << ", " << dzLine1 << " and " << dxLine2 << ", " << dzLine2 << endl;
+  //cout << "deltas: " << dxLine1 << ", " << dzLine1 << " and " << dxLine2 << ", " << dzLine2 << endl;
 
-  // TODO can be more simply expressed!
-  Pt newPt1 = pt2.delta(dxLine1, dzLine1);
-  Pt newPt2 = newPt1.delta(dxLine2, dzLine2);
-  Pt newPt3 = newPt2.delta(-dxLine1, -dzLine1);
   list<Pt> result;
-  result.push_back(newPt1);
-  result.push_back(newPt2);
-  result.push_back(newPt3);
+  result.push_back(pt2.delta(dxLine1, dzLine1));
+  result.push_back(pt2.delta(dxLine1 + dxLine2, dzLine1 + dzLine2));
+  result.push_back(pt2.delta(dxLine2, dzLine2));
 
   return result;
 }
@@ -129,22 +121,19 @@ void Polygon::cutAllCorners(int cutX, int cutZ) {
   list<Pt> result;
 
   Pt pt1 = points.front();
-  //result.push_back(pt1);  //
   auto iter = next(points.begin());
   Pt pt2 = *iter;
   Pt pt3 = *next(iter);
 
   while (true) {
-    cout << "cutting corner: " << pt1 << ", " << pt2 << ", " << pt3 << endl;
     auto newPoints = cutCorner(pt1, pt2, pt3, cutX, cutZ);
     result.insert(result.end(), newPoints.begin(), newPoints.end());
-    cout << "pushed a new group ending with " << newPoints.back() << "\n\n";
 
     iter++;
     if (iter == points.end()) {
       break;
     }
-    pt1 = newPoints.back();
+    pt1 = result.back();
     if (next(iter) == points.end()) {
       pt2 = *iter;
       // NOT result.front(), because that's been shifted!
@@ -156,7 +145,6 @@ void Polygon::cutAllCorners(int cutX, int cutZ) {
   }
 
   // The wrap-around case
-  cout << "cutting corner: " << result.back() << ", " << points.front() << ", " << result.front() << endl;
   auto lastPoints = cutCorner(result.back(), points.front(), result.front(), cutX, cutZ);
   result.insert(result.end(), lastPoints.begin(), lastPoints.end());
 

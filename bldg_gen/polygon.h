@@ -4,8 +4,6 @@
 #include <iostream>
 #include "primitives.h"
 
-// TODO rename polygon
-
 using namespace std;
 
 // Represents a simple polygon
