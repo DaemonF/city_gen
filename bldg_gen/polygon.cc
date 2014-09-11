@@ -51,42 +51,6 @@ list<Line> Polygon::getLines() const {
   return lines;
 }
 
-void Polygon::dumpAscii() const {
-  // Discover the bounds. Assumes the min is 0.
-  int maxX = 0;
-  int maxZ = 0;
-  for (auto pt : points) {
-    maxX = max(maxX, pt.x());
-    maxZ = max(maxZ, pt.z());
-  }
-
-  // Fill out a lil grid
-  vector< vector<int> > grid(maxX + 1, vector<int>(maxZ + 1));
-  for (auto line : getLines()) {
-    // This relies on the assumption that all lines are either horiz/vertical and have same height
-    int x1 = line.start().x();
-    int z1 = line.start().z();
-    int x2 = line.end().x();
-    int z2 = line.end().z();
-
-    for (int x = min(x1, x2); x <= max(x1, x2); x++) {
-      for (int z = min(z1, z2); z <= max(z1, z2); z++) {
-        grid[x][z] = y;
-      }
-    }
-  }
-
-  // Print, interpreting each z as a row
-  for (int z = 0; z <= maxZ; z++) {
-    for (int x = 0; x <= maxX; x++) {
-      int y = grid[x][z];
-      char tile = y == 0 ? ' ' : 'a' + (y - 1);
-      cout << tile;
-    }
-    cout << endl;
-  }
-}
-
 list<Pt> makeRectangle(int sizeX, int sizeZ) {
   list<Pt> rectangle;
   rectangle.push_back(Pt(0, 0));
