@@ -1,73 +1,23 @@
-two questions
+the ultimate interface:
 
-1) what abstraction for buildings (external only) is useful to manipulate?
+- polygon/face
+  - each pt connected by a "line" (straight or some kind of curve)
 
-2) what drawing primitives should nick expose?
-
-in 2D, a grid makes total sense
-    
-     ######
-     #    #
-   ###    #
-   #    ###
-   ###  #  
-     ####  
-
-for 3D, we could just extrude this up, and that'd be pretty interesting. computing the quads that
-make it up also wouldn't be too hard.
-
-but one flat building is boring, it'd be cooler to have different height stuff. so place another
-shape in the first, and extrude that one even taller.
-
-###########
-#         #
-# @@@@@   #
-# @   @@  #
-# @@ $$@  #
-#  @ $$@  #
-#  @@@@@  #
-#         #
-###########
-
-transforming this to quads to render could be done "from the ground up"
-
-- find the base layer's lines in 2D
-- make those quads that go up some height, those're the walls
-- for every base layer, do a flat polygon in the correct shape of the thing. that's the floor, which
-  is necessary above the ground floor.
+for both building bases and walls
 
 
 
-so, back to representation question:
 
-1) grid of heights
 
-11111111111
-1         1
-1 22222   1
-1 2   22  1
-1 22 332  1
-1  2 332  1
-1  22222  1
-1         1
-11111111111
-
-- easier to generate
-- easy to visualize in 2D
-- if they're well-formed, can discover lines by trivial clockwise traversal
-
-2) list of line segments
-
-- slightly harder to dump in ascii
-- directly easy to render
-- but without having a good notion of "generate something inside this weird-shaped region",
-  hard to generate weird shapes
-
-speaking of weird shape generation, how's that work?
-
-given a rectangle, eat at the corners. easy.
-
-so wrong question... given a new weird shape, how to generate another one inside that?
-1) could find the biggest rectangle inside it, do the eat-corner thing again
-2) could wall-traverse from the inside, marking the blank space. but how to eat at those corners?
-the shape would become staircase.
+TODO
+- from a polygon, produce another one to go on top
+  - discover a rectangle inside, then start over with same corners?
+  - handle the case where some lines get crunched in
+  - http://stackoverflow.com/questions/1109536/an-algorithm-for-inflating-deflating-offsetting-buffering-polygons
+- easy way to specify polygon styles
+  - different cuts per corner?
+  - only cut some corners?
+  - make sure cuts aren't overlapping
+  - another cut-corner style with line segments directly between the cuts
+    - requires a better debug; ascii needs bresenham
+- specify an entire building (walls and base)

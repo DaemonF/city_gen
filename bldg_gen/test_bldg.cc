@@ -14,5 +14,6 @@ int main()
   polygon.cutAllCorners(2, 2);
   cout << "\nAfter all corner cuts:\n";
   polygon.dumpAscii();
+  polygon.display();
   //cout << polygon << endl;
 }

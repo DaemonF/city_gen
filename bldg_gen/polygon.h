@@ -27,6 +27,10 @@ class Polygon {
     /* Side-effect */
     // Represents ground height (0) as ' ', each step up as an increasing letter.
     void dumpAscii() const;
+
+    // In OpenGL
+    void display() const;
+    void display_draw() const;
 };
 
 // Begins at (0, 0)
